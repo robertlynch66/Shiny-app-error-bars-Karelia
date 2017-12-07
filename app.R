@@ -4,6 +4,7 @@ library(ggplot2)
 library(shiny)
 library(dplyr)
 # load the data
+# make a change
 # get data
 source("getdata.R")
 # filter only those born in karelia
