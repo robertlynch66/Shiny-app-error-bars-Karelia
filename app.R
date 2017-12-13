@@ -1,3 +1,7 @@
+# To do add 
+#  aafb  - age at first birth and
+#  fcyob - first child year of birth  to app using format of birth cohorts (byear)
+
 library(Hmisc)
 library("tidyverse")
 library(ggplot2)
@@ -28,13 +32,17 @@ x_axis_choices <- c("Sex" = "sex",
                     "Statistics Finland occupational categories"="statistics_finland",
                     "Census 1950 occupational categories"="census_1950",
                     "Wedding Year" = "wedyear",
-                    "Birth cohort"="byear")
+                    "Birth cohort"="byear",
+                    "Age at first birth"="aafb",
+                    "First childs YOB"= "fcyob")
 y_axis_choices <- c("Probability of returning to Karelia (95% CI)"="returnedkarelia",
                     "Pre war moves (95% CI)"="movesbefore1940",
                     "Post war moves (95% CI)" = "movesafter1945",
                     "Probability of marrying a non Karelian (95% CI)"="outbred",
                     "Peacetime moves (95% CI)"="peacetime_migrations",
-                    "Number of children (95% CI)"="kids","Population of birthplace (95% CI)"="birthpopulation")
+                    "Number of children (95% CI)"="kids",
+                    "Population of birthplace (95% CI)"="birthpopulation",
+                    "Age at first birth"="aafb_n")
 
 legend_choices <- c("Sex" = "sex", 
                     "Agriculture" = "agriculture",
@@ -47,7 +55,9 @@ legend_choices <- c("Sex" = "sex",
                     "Statistics Finland occupational categories"="statistics_finland",
                     "Census 1950 occupational categories"="census_1950",
                     "Wedding Year" = "wedyear",
-                    "Birth cohort"="byear")
+                    "Birth cohort"="byear",
+                    "Age at first birth"="aafb",
+                    "First childs YOB"= "fcyob")
 #"Returned to Karelia between the wars"="returnedkarelia_factor")
 
 ui<-fluidPage(
@@ -68,8 +78,8 @@ ui<-fluidPage(
            #step=500, round=0),
            br(),
            checkboxInput('jitter', 'Show data', value=FALSE), #,
-           checkboxInput('refugee', 'Evacuees only'),
-           checkboxInput('primary', 'Primary only')
+           checkboxInput('refugee', 'Evacuees only', value=TRUE),
+           checkboxInput('primary', 'Primary only', value=TRUE)
     ),
     
     
@@ -82,10 +92,12 @@ ui<-fluidPage(
                                                          "Census 1950 occupation categories"='census_1950',"Served in Lotta svard"="lotta",        
                                                          "Served during the war"="servedduringwar",   
                                                          "Injured during the war"="injuredinwar",
-                                                         "Farm total hectares (logged)"="farmtotalarea","Wedding Year" = "wedyear","Birth cohort"="byear"),selected="birthpopulation"),      
+                                                         "Farm total hectares (logged)"="farmtotalarea","Wedding Year" = "wedyear","Birth cohort"="byear",
+                                                         "Age at first birth"="aafb",
+                                                         "First childs YOB"= "fcyob"),selected="birthpopulation"),      
            
            selectInput('y', label='Y-axis', choices=list("Probability of returning to Karelia"="returnedkarelia","Married a non Karelian"="outbred","Peactime movements"="peacetime_migrations",
-                                                         "Pre war moves"="movesbefore1940","Post war moves"="movesafter1945","Number of kids"="kids"),selected="returnedkarelia")#,
+                                                         "Pre war moves"="movesbefore1940","Post war moves"="movesafter1945","Number of kids"="kids","Age at first birth"="aafb_n"),selected="returnedkarelia")#,
            
            
            
@@ -98,13 +110,15 @@ ui<-fluidPage(
     
     column(4,
            selectInput('facet_row', 'Rows',
-                       c(None='.',"Sex"="sex","Birth cohort"="byear","Wedding Year" = "wedyear","Agriculture"="agriculture","Manual labor"=
+                       c(None='.',"Sex"="sex","Birth cohort"="byear","Age at first birth"="aafb",
+                         "First childs YOB"= "fcyob","Wedding Year" = "wedyear","Agriculture"="agriculture","Manual labor"=
                            "man_labor","Returned to Karelia between the wars"="returnedkarelia_factor", "Educated"="education","Married In"="outbreed","Statistics Finland occupational categories"="statistics_finland",
                          "Social class"="social_class","Census 1950 occupation categories"="census_1950","Served in Lotta svard"="lotta",        
                          "Served during the war"="servedduringwar",   
                          "Injured during the war"="injuredinwar"
                           )),
-           selectInput('facet_col', 'Columns',c(None='.', "Sex"="sex","Birth cohort"="byear","Wedding Year" = "wedyear","Agriculture"="agriculture","Manual labor"=
+           selectInput('facet_col', 'Columns',c(None='.', "Sex"="sex","Birth cohort"="byear","Age at first birth"="aafb",
+                                                "First childs YOB"= "fcyob","Wedding Year" = "wedyear","Agriculture"="agriculture","Manual labor"=
                                                   "man_labor", "Educated"="education","Returned to Karelia between the wars"="returnedkarelia_factor","Married In"="outbreed","Statistics Finland occupational categories"="statistics_finland",
                                                 "Social class"="social_class","Census 1950 occupation categories"="census_1950",
                                                 "Served in Lotta svard"="lotta",        
@@ -138,7 +152,8 @@ server<- function(input, output) {
     if (input$y == "peactime_migrations" ) {s<- s[!is.na(s$peactime_migrations), ]}
     else if (input$y == "movesbefore1940" ) {s<- s[!is.na(s$movesbefore1940), ]}
     else if (input$y == "movesafter1945" ) {s<- s[!is.na(s$movesafter1945), ]}
-    else s<- s
+    else if (input$y == "aafb_n") {s<- s[!is.na(s$aafb_n), ]}
+    else s <- s
     
     if (input$refugee)
     {s <- s  %>% filter (birthregion=="karelia")}
@@ -151,6 +166,8 @@ server<- function(input, output) {
     if (input$x == "social_class" ) {s<- s[!is.na(s$social_class), ]}
     else if (input$x == "sex" ) {s<- s[!is.na(s$sex), ]}
     else if (input$x == "byear" ) {s<- s[!is.na(s$byear), ]}
+    else if (input$x == "aafb" ) {s<- s[!is.na(s$aafb), ]}
+    else if (input$x == "fcyob" ) {s<- s[!is.na(s$fcyob), ]}
     else if (input$x == "wedyear" ) {s<- s[!is.na(s$wedyear), ]}
     else if (input$x == "agriculture" ) {s<- s[!is.na(s$agriculture), ]}
     else if (input$x == "outbreed") {s<- s[!is.na(s$outbreed), ]}
@@ -171,6 +188,8 @@ server<- function(input, output) {
     if (input$facet_row == "social_class" ) {s<- s[!is.na(s$social_class), ]}
     else if (input$facet_row == "sex" ) {s<- s[!is.na(s$sex), ]}
     else if (input$facet_row == "byear" ) {s<- s[!is.na(s$byear), ]}
+    else if (input$facet_row == "fcyob" ) {s<- s[!is.na(s$fcyob), ]}
+    else if (input$facet_row == "aafb" ) {s<- s[!is.na(s$aafb), ]}
     else if (input$facet_row == "wedyear" ) {s<- s[!is.na(s$wedyear), ]}
     else if (input$facet_row == "agriculture" ) {s<- s[!is.na(s$agriculture), ]}
     else if (input$facet_row == "outbreed") {s<- s[!is.na(s$outbreed), ]}
@@ -188,6 +207,8 @@ server<- function(input, output) {
     else if (input$facet_col == "sex" ) {s<- s[!is.na(s$sex), ]}
     else if (input$facet_col == "wedyear" ) {s<- s[!is.na(s$wedyear), ]}
     else if (input$facet_col == "byear" ) {s<- s[!is.na(s$byear), ]}
+    else if (input$facet_col == "fcyob" ) {s<- s[!is.na(s$fcyob), ]}
+    else if (input$facet_col == "aafb" ) {s<- s[!is.na(s$aafb), ]}
     else if (input$facet_col == "agriculture" ) {s<- s[!is.na(s$agriculture), ]}
     else if (input$facet_col == "outbreed") {s<- s[!is.na(s$outbreed), ]}
     else if (input$facet_col == "man_labor" ) {s<- s[!is.na(s$man_labor), ]}
@@ -353,7 +374,7 @@ server<- function(input, output) {
       scale_x_continuous("Population of Return Destination in Karelia (logged)",limits=c(6,11))
     }
     else if (input$x == "farmtotalarea") {
-      scale_x_continuous("Total hectares of land (logged)",limits=c(-3,7))
+      scale_x_continuous("Total hectares of land (logged)",limits=c(0,7))
     }
     else if (input$x == "byear") {
       scale_x_discrete("Birth Cohort", 
@@ -361,6 +382,22 @@ server<- function(input, output) {
                                 "3"="1911-1915","4"="1916-1920","5"="1921-1925",
                                 "6"="1926-1930","7"="1931-1935","8"="1936-1940",
                                 "9"="After 1940"))
+    }
+    
+    else if (input$x == "fcyob") {
+      scale_x_discrete("First child year year of birth", 
+                       labels=c("0"="Before 1920","1"="1920-1925","2"="1926-1930",
+                                         "3"="1931-1935","4"="1936-1940","5"="1941-1945",
+                                         "6"="1946-1950","7"="1951-1955","8"="1956-1960",
+                                         "9"="After 1960"))
+    }
+    
+    else if (input$x == "aafb") {
+      scale_x_discrete("Age at first birth", 
+                       labels=c("0"="Under 19","1"="19-22","2"="23-25",
+                                               "3"="26-28","4"="29-31","5"="32-34",
+                                               "6"="35-37","7"="38-40","8"="41-43",
+                                               "9"="Over 43"))
     }
     else if (input$x == "wedyear") {
       scale_x_discrete("Wedding Year", 
@@ -481,6 +518,13 @@ server<- function(input, output) {
     }
     else if (input$x == "injuredinwar") {
       scale_color_manual (name="Injured during the war",values=colors_1,  labels=c("0"="Not Injured", "1"="Injured"))
+    }
+    
+    else if (input$x == "fcyob") {
+      scale_color_manual (name="First child YOB",values=colors_1)
+    }
+    else if (input$x == "aafb") {
+      scale_color_manual (name="Age at first birth",values=colors_1)
     }
     else
       scale_color_manual (labels =("") )
