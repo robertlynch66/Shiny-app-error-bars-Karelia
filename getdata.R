@@ -24,6 +24,8 @@ s$birthpopulation <- gsub("2559000", NA, s$birthpopulation)
 s$social_class <- factor(s$social_class, labels=c("Wealthy","Rich","Upper Middle","Middle","Lower Middle", "Lower",
                                                   "Poor"))
 s$sex <- factor(s$sex, labels=c("Female","Male"))
+s$age_at_first_birth <- ifelse (s$age_at_first_birth>12, s$age_at_first_birth, NA)
+s$first_child_yob <- ifelse (s$first_child_yob>1900, s$first_child_yob, NA)
 s$aafb_n <- as.numeric (s$age_at_first_birth)
 s$fdf_population <- as.numeric(s$fdf_population)
 s$fdf_population <- log(s$fdf_population)
