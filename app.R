@@ -26,7 +26,6 @@ x_axis_choices <- c("Sex" = "sex",
                     "Manual labor"="man_labor",
                     "Education"="education",
                     "Served in Lotta Svard"="lotta",  
-                    "Served in Lotta Conservative" = "lottaconservative",
                     "Served during the war"="servedduringwar",   
                     "Injured during the war"="injuredinwar",
                     "Farm total hectares (logged)"="farmtotalarea",
@@ -51,7 +50,6 @@ legend_choices <- c("Sex" = "sex",
                     "Manual labor"="man_labor",
                     "Education"="education",
                     "Served in Lotta svard"="lotta", 
-                    "Served in Lotta conservative" ="lottaconservative",
                     "Served during the war"="servedduringwar",   
                     "Injured during the war"="injuredinwar",
                     "Statistics Finland occupational categories"="statistics_finland",
@@ -92,7 +90,6 @@ ui<-fluidPage(
                                                          "Educated"="education","Married In"="outbreed","Statistics Finland occupational categories"="statistics_finland","Population of birthplace"="birthpopulation",
                                                          "Population of First Destination Finland"="fdf_population","Population of Return Destination Karelia"="rdk_population","Social class"="social_class",
                                                          "Census 1950 occupation categories"='census_1950',"Served in Lotta svard"="lotta", 
-                                                         "Served in Lotta conservative" = "lottaconservative",
                                                          "Served during the war"="servedduringwar",   
                                                          "Injured during the war"="injuredinwar",
                                                          "Farm total hectares (logged)"="farmtotalarea","Wedding Year" = "wedyear","Birth cohort"="byear",
@@ -117,7 +114,6 @@ ui<-fluidPage(
                          "First childs YOB"= "fcyob","Wedding Year" = "wedyear","Agriculture"="agriculture","Manual labor"=
                            "man_labor","Returned to Karelia between the wars"="returnedkarelia_factor", "Educated"="education","Married In"="outbreed","Statistics Finland occupational categories"="statistics_finland",
                          "Social class"="social_class","Census 1950 occupation categories"="census_1950","Served in Lotta svard"="lotta", 
-                         "Served in Lotta conservative" = "lottaconservative",
                          "Served during the war"="servedduringwar",   
                          "Injured during the war"="injuredinwar"
                           )),
@@ -126,7 +122,6 @@ ui<-fluidPage(
                                                   "man_labor", "Educated"="education","Returned to Karelia between the wars"="returnedkarelia_factor","Married In"="outbreed","Statistics Finland occupational categories"="statistics_finland",
                                                 "Social class"="social_class","Census 1950 occupation categories"="census_1950",
                                                 "Served in Lotta svard"="lotta",
-                                                "Served in Lotta conservative" = "lottaconservative",
                                                 "Served during the war"="servedduringwar",   
                                                 "Injured during the war"="injuredinwar")))
   )
@@ -186,7 +181,6 @@ server<- function(input, output) {
     else if (input$x == "rdk_population"){s <- s[!is.na(s$rdk_population)& s$returnedkarelia_factor=="Returned",]}
     else if (input$x == "farmtotalarea"){s <- s[!is.na(s$farmtotalarea)& s$agriculture=="Agricultural",]}
     else if (input$x == "lotta"){s <- s[!is.na(s$lotta)& s$sex=="Female",]}
-    else if (input$x == "lottaconservative"){s <- s[!is.na(s$lottaconservative)& s$sex=="Female",]}
     else if (input$x == "servedduringwar"){s <- s[!is.na(s$servedduringwar),]}
     else if (input$x == "injuredinwar"){s <- s[!is.na(s$injuredinwar),]}
     else s<- s
@@ -205,7 +199,6 @@ server<- function(input, output) {
     else if (input$facet_row == "census_1950") {s<- s[!is.na(s$census_1950), ]}
     else if (input$facet_row == "returnedkarelia_factor"){s<- s[!is.na(s$returnedkarelia_factor),]}
     else if (input$facet_row == "lotta"){s <- s[!is.na(s$lotta)& s$sex=="Female",]}
-    else if (input$facet_row == "lottaconservative"){s <- s[!is.na(s$lottaconservative)& s$sex=="Female",]}
     else if (input$facet_row == "servedduringwar"){s <- s[!is.na(s$servedduringwar),]}
     else if (input$facet_row == "injuredinwar"){s <- s[!is.na(s$injuredinwar),]}
     else s<- s
@@ -223,7 +216,6 @@ server<- function(input, output) {
     else if (input$facet_col == "statistics_finland") {s<- s[!is.na(s$statistics_finland), ]}
     else if (input$facet_col == "census_1950") {s<- s[!is.na(s$census_1950), ]}
     else if (input$facet_col == "lotta"){s <- s[!is.na(s$lotta)& s$sex=="Female",]}
-    else if (input$facet_col == "lottaconservative"){s <- s[!is.na(s$lottaconservative)& s$sex=="Female",]}
     else if (input$facet_col == "servedduringwar"){s <- s[!is.na(s$servedduringwar),]}
     else if (input$facet_col == "injuredinwar"){s <- s[!is.na(s$injuredinwar),]}
     else if (input$facet_col == "returnedkarelia_factor"){s<- s[!is.na(s$returnedkarelia_factor),]}
@@ -417,9 +409,7 @@ server<- function(input, output) {
     else if (input$x == "lotta") {
       scale_x_discrete("Served in Lotta Svard", 
                        labels=c("0"="Did not serve", "1"="Served"))}
-    else if (input$x == "lottaconservative") {
-      scale_x_discrete("Served in Lotta Svard", 
-                       labels=c("0"="Did not serve", "1"="Served"))}
+   
     else if (input$x == "servedduringwar") {
       scale_x_discrete("Served During the War", 
                        labels=c("0"="Did not serve", "1"="Served"))}
@@ -524,9 +514,7 @@ server<- function(input, output) {
     else if (input$x == "lotta") {
       scale_color_manual (name="Served in Lotta svard",values=colors_1,  labels=c("0"="Did not serve", "1"="Served"))
     }
-    else if (input$x == "lottaconservative") {
-      scale_color_manual (name="Served in Lotta svard",values=colors_1,  labels=c("0"="Did not serve", "1"="Served"))
-    }
+    
     else if (input$x == "servedduringwar") {
       scale_color_manual (name="Served during the war",values=colors_1,  labels=c("0"="Did not serve", "1"="Served"))
     }

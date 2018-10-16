@@ -37,14 +37,14 @@ s$farmtotalarea <- s$farmtotalarea + (1-min(s$farmtotalarea, na.rm=TRUE))
 s$farmtotalarea <- log(s$farmtotalarea)
 s$servedduringwar <- as.integer(s$servedduringwar)
 s$lotta <- as.integer(s$lotta)
-s$lottaconservative <- as.integer(s$lottaconservative)
+
 s$injuredinwar <- as.integer(s$injuredinwar)
 
 
 # make the drop down categorial variables factors
 s$servedduringwar <- factor (s$servedduringwar, labels = c("Did not serve","Served"))
 s$lotta <- factor (s$lotta, labels= c("Did not serve","Served"))
-s$lottaconservative <- factor (s$lottaconservative, labels= c("Did not serve","Served"))
+
 s$injuredinwar <- factor (s$injuredinwar, labels = c("Not injured","Injured"))
 s$man_labor <- factor(s$man_labor, labels=c("Non-manual labor", "Manual labor"))
 s$agriculture <- factor(s$agriculture, labels = c("Non-agricultural", "Agricultural"))
